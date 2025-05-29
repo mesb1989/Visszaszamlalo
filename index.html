@@ -7,101 +7,63 @@
   <title>Az óra ketyeg</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0f172a;
-      --fg: #e2e8f0;
-      --accent: #60a5fa;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
+      margin: 0;
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
+      background-color: #0f172a;
+      color: #e2e8f0;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
-
     header {
       text-align: center;
       padding: 4rem 1rem 2rem;
     }
-
     header h1 {
       font-size: 2.5rem;
       font-weight: 700;
     }
-
     #countdown {
       font-family: 'Roboto Mono', monospace;
       font-size: 1.8rem;
       margin-top: 1.5rem;
-      color: var(--accent);
+      color: #60a5fa;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.6; }
     }
-
     main {
-      padding: 2rem 1rem 4rem;
+      padding: 2rem;
       max-width: 1000px;
       margin: 0 auto;
     }
-
     h2 {
       font-size: 1.3rem;
       margin-bottom: 1rem;
-      border-bottom: 2px solid var(--accent);
+      border-bottom: 2px solid #60a5fa;
       padding-bottom: 0.5rem;
     }
-
     .news-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-
     .news-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: #1e293b;
+      border: 1px solid #334155;
       padding: 1rem;
       border-radius: 0.75rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
-    .news-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
     .news-card a {
-      color: var(--accent);
+      color: #60a5fa;
       text-decoration: none;
       font-weight: 600;
     }
-
     .news-card a:hover {
       text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.8rem;
-      }
-      #countdown {
-        font-size: 1.2rem;
-      }
     }
   </style>
 </head>
@@ -110,12 +72,10 @@
     <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
     <div id="countdown">Betöltés...</div>
   </header>
-
   <main>
     <h2>Valódi hírek</h2>
     <div id="news" class="news-grid"></div>
   </main>
-
   <script>
     const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
     const countdownEl = document.getElementById("countdown");
@@ -123,58 +83,60 @@
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = countdownDate - now;
-
       if (distance <= 0) {
         countdownEl.textContent = "A választás elindult!";
         return;
       }
-
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
       countdownEl.textContent = `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
     };
-
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
     const feeds = [
-      "https://telex.hu/rss",
-      "https://444.hu/feed",
-      "https://atlatszo.hu/feed",
-      "https://merce.hu/feed"
+      { name: "Telex", url: "https://telex.hu/rss" },
+      { name: "444", url: "https://444.hu/feed" },
+      { name: "Átlátszó", url: "https://atlatszo.hu/feed" },
+      { name: "Mérce", url: "https://merce.hu/feed" }
     ];
 
-    async function fetchFeed(feedUrl) {
-      const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+    async function fetchFeed(feed) {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feed.url)}`;
       try {
-        const res = await fetch(api);
+        const res = await fetch(proxyUrl);
         const data = await res.json();
-        return data.items.slice(0, 3);
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "text/xml");
+        const items = xml.querySelectorAll("item");
+        return Array.from(items).slice(0, 3).map(item => ({
+          title: item.querySelector("title").textContent,
+          link: item.querySelector("link").textContent
+        }));
       } catch (err) {
-        console.error(`Hiba a(z) ${feedUrl} betöltésekor:`, err);
+        console.error(`Hiba a(z) ${feed.name} forrás betöltésekor:`, err);
         return [];
       }
     }
 
     async function loadNews() {
-      const newsContainer = document.getElementById("news");
-      newsContainer.innerHTML = "";
+      const container = document.getElementById("news");
+      container.innerHTML = "";
       for (const feed of feeds) {
         const items = await fetchFeed(feed);
         items.forEach(item => {
           const card = document.createElement("div");
           card.className = "news-card";
           card.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
-          newsContainer.appendChild(card);
+          container.appendChild(card);
         });
       }
     }
 
     loadNews();
-    setInterval(loadNews, 15 * 60 * 1000); // Frissítés 15 percenként
+    setInterval(loadNews, 15 * 60 * 1000);
   </script>
 </body>
 </html>
