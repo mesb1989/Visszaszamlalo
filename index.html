@@ -4,33 +4,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Az óra ketyeg</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
       background: #111827;
       color: white;
-      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main {
+      flex: 2;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      padding: 2rem;
       text-align: center;
     }
-    h1 {
+
+    .main h1 {
       font-size: 2.5rem;
-      margin-bottom: 20px;
+      margin-bottom: 1rem;
     }
+
     #countdown {
       font-size: 1.5rem;
+    }
+
+    .sidebar {
+      flex: 1;
+      background: #1f2937;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #374151;
+      padding-bottom: 0.5rem;
+    }
+
+    .news-item {
+      margin-bottom: 1rem;
+    }
+
+    .news-item a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .news-item a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        order: -1;
+        height: 40vh;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
-  <div id="countdown"></div>
+  <div class="main">
+    <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
+    <div id="countdown"></div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Valódi hírek</h2>
+    <div id="news"></div>
+  </div>
 
   <script>
+    // Visszaszámláló
     const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
     const countdown = setInterval(() => {
       const now = new Date().getTime();
@@ -47,9 +105,46 @@
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      document.getElementById("countdown").innerText = 
+      document.getElementById("countdown").innerText =
         `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
     }, 1000);
+
+    // Hírek betöltése
+    const feeds = [
+      "https://telex.hu/rss",
+      "https://444.hu/feed",
+      "https://atlatszo.hu/feed",
+      "https://merce.hu/feed"
+    ];
+
+    async function fetchFeed(feedUrl) {
+      const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+      try {
+        const res = await fetch(api);
+        const data = await res.json();
+        return data.items.slice(0, 3); // csak 3 hír/forrás
+      } catch (err) {
+        console.error(`Hiba a(z) ${feedUrl} betöltésekor:`, err);
+        return [];
+      }
+    }
+
+    async function loadNews() {
+      const newsContainer = document.getElementById("news");
+      newsContainer.innerHTML = "";
+      for (const feed of feeds) {
+        const items = await fetchFeed(feed);
+        items.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "news-item";
+          div.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+          newsContainer.appendChild(div);
+        });
+      }
+    }
+
+    loadNews();
+    setInterval(loadNews, 15 * 60 * 1000); // Frissítés 15 percenként
   </script>
 </body>
 </html>
