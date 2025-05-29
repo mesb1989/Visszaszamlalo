@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -7,54 +8,62 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --fg: #e2e8f0;
-      --accent: #60a5fa;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --muted: #94a3b8;
+      --bg: #fdf6ec;
+      --fg: #1e293b;
+      --accent: #d97706;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --muted: #6b7280;
     }
 
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: url('https://images.unsplash.com/photo-1526401485004-2fda9f4f885d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
-      background-size: cover;
+      background-color: var(--bg);
       color: var(--fg);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      backdrop-filter: brightness(0.6);
     }
 
     header {
       text-align: center;
       padding: 4rem 1rem 2rem;
-      background-color: rgba(15, 23, 42, 0.7);
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Parliament_Budapest_Hungary_01.jpg/1600px-Parliament_Budapest_Hungary_01.jpg') no-repeat center center;
+      background-size: cover;
+      color: white;
     }
 
     header h1 {
       font-size: 2.5rem;
       font-weight: 700;
+      text-shadow: 1px 1px 5px #000;
     }
 
     #countdown {
       font-family: 'Roboto Mono', monospace;
       font-size: 1.8rem;
       margin-top: 1.5rem;
-      color: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+      color: #fffacd;
+      text-shadow: 1px 1px 4px #000;
     }
 
     main {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 2rem;
       padding: 2rem;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    aside {
+      flex: 1;
+    }
+
+    section {
+      flex: 2;
     }
 
     h2 {
@@ -62,47 +71,53 @@
       margin-bottom: 1.5rem;
       border-bottom: 2px solid var(--accent);
       padding-bottom: 0.5rem;
-      color: #ffffff;
-    }.news-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
     .news-card {
-      background: rgba(30, 41, 59, 0.85);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       padding: 1.5rem;
       border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .news-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .news-card a {
-      color: var(--accent);
+      color: var(--fg);
       text-decoration: none;
       font-size: 1.1rem;
       font-weight: 600;
-      display: block;
-      margin-bottom: 0.5rem;
     }
 
     .news-meta {
       font-size: 0.85rem;
       color: var(--muted);
+      margin-top: 0.5rem;
     }
 
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.8rem;
+    iframe {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      height: 315px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
       }
-      #countdown {
-        font-size: 1.2rem;
+
+      aside {
+        order: 2;
+      }
+
+      section {
+        order: 1;
       }
     }
   </style>
@@ -114,9 +129,23 @@
   </header>
 
   <main>
-    <h2>Valódi hírek</h2>
-    <div id="news" class="news-grid"></div>
-  </main><script>
+    <aside>
+      <h2>Partizán</h2>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PL3X4D4V2nTqBdU1h_POB3wJ7IdqEQaqzc" allowfullscreen></iframe>
+    </aside>
+
+    <section>
+      <h2>Valódi hírek</h2>
+      <div id="news" class="news-list"></div>
+    </section>
+
+    <aside>
+      <h2>ATV Híradó</h2>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PLlGZKnC4DZz8-1mPZmHYyo8c_g7fdH-4E" allowfullscreen></iframe>
+    </aside>
+  </main>
+
+  <script>
     const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
     const countdownEl = document.getElementById("countdown");
 
@@ -152,7 +181,7 @@
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "text/xml");
         const items = xml.querySelectorAll("item");
-        return Array.from(items).slice(0, 3).map(item => ({
+        return Array.from(items).slice(0, 1).map(item => ({
           title: item.querySelector("title").textContent,
           link: item.querySelector("link").textContent,
           pubDate: item.querySelector("pubDate")?.textContent || "",
