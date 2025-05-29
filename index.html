@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Az óra ketyeg</title>
+  <style>
+    body {
+      background: #111827;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    #countdown {
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
+  <div id="countdown"></div>
+
+  <script>
+    const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
+    const countdown = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = countdownDate - now;
+
+      if (distance <= 0) {
+        clearInterval(countdown);
+        document.getElementById("countdown").innerText = "A választás elindult!";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerText = 
+        `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
+    }, 1000);
+  </script>
+</body>
+</html>
