@@ -7,63 +7,105 @@
   <title>Az óra ketyeg</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --bg: #0f172a;
+      --fg: #e2e8f0;
+      --accent: #60a5fa;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: 'Inter', sans-serif;
-      background-color: #0f172a;
-      color: #e2e8f0;
+      background: var(--bg);
+      color: var(--fg);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
+
     header {
       text-align: center;
       padding: 4rem 1rem 2rem;
     }
+
     header h1 {
       font-size: 2.5rem;
       font-weight: 700;
     }
+
     #countdown {
       font-family: 'Roboto Mono', monospace;
       font-size: 1.8rem;
       margin-top: 1.5rem;
-      color: #60a5fa;
+      color: var(--accent);
       animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.6; }
     }
+
     main {
       padding: 2rem;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
+
     h2 {
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #60a5fa;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--accent);
       padding-bottom: 0.5rem;
     }
+
     .news-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
     }
+
     .news-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 1.2rem;
       border-radius: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
     .news-card a {
-      color: #60a5fa;
+      color: var(--accent);
       text-decoration: none;
       font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
     }
-    .news-card a:hover {
-      text-decoration: underline;
+
+    .news-meta {
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      #countdown {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -72,10 +114,12 @@
     <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
     <div id="countdown">Betöltés...</div>
   </header>
+
   <main>
     <h2>Valódi hírek</h2>
     <div id="news" class="news-grid"></div>
   </main>
+
   <script>
     const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
     const countdownEl = document.getElementById("countdown");
@@ -113,7 +157,9 @@
         const items = xml.querySelectorAll("item");
         return Array.from(items).slice(0, 3).map(item => ({
           title: item.querySelector("title").textContent,
-          link: item.querySelector("link").textContent
+          link: item.querySelector("link").textContent,
+          pubDate: item.querySelector("pubDate")?.textContent || "",
+          source: feed.name
         }));
       } catch (err) {
         console.error(`Hiba a(z) ${feed.name} forrás betöltésekor:`, err);
@@ -129,7 +175,10 @@
         items.forEach(item => {
           const card = document.createElement("div");
           card.className = "news-card";
-          card.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+          card.innerHTML = `
+            <a href="${item.link}" target="_blank">${item.title}</a>
+            <div class="news-meta">${item.source} • ${new Date(item.pubDate).toLocaleString("hu-HU", { dateStyle: "medium", timeStyle: "short" })}</div>
+          `;
           container.appendChild(card);
         });
       }
