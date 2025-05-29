@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Az óra ketyeg</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdf6ec;
+      --fg: #1e293b;
+      --accent: #d97706;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --muted: #6b7280;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Orszaghaz_night.jpg/1600px-Orszaghaz_night.jpg') no-repeat center center;
+      background-size: cover;
+      color: white;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-shadow: 1px 1px 5px #000;
+    }
+
+    #countdown {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.8rem;
+      margin-top: 1.5rem;
+      color: #fffacd;
+      text-shadow: 1px 1px 4px #000;
+    }
+
+    main {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    aside {
+      flex: 1;
+    }
+
+    section {
+      flex: 2;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.5rem;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .news-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .news-card a {
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .news-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    iframe {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      height: 315px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
+      }
+
+      aside {
+        order: 2;
+      }
+
+      section {
+        order: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
+    <div id="countdown">Betöltés...</div>
+  </header>
+
+  <main>
+    <aside>
+      <h2>Partizán</h2>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PLDcgAzKvMm0hAHsRdqBboGlEpXEs8KzlE" allowfullscreen></iframe>
+    </aside>
+
+    <section>
+      <h2>Valódi hírek</h2>
+      <div id="news" class="news-list"></div>
+    </section>
+
+    <aside>
+      <h2>ATV</h2>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PLLbVIN5-thkpkZHQTqiwBTXC4KCv28KUt" allowfullscreen></iframe>
+    </aside>
+  </main>
+
+  <script>
+    const countdownDate = new Date("2026-04-12T06:00:00+02:00").getTime();
+    const countdownEl = document.getElementById("countdown");
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = countdownDate - now;
+      if (distance <= 0) {
+        countdownEl.textContent = "A választás elindult!";
+        return;
+      }
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      countdownEl.textContent = `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
+    };
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    const feeds = [
+      { name: "Telex", url: "https://telex.hu/rss" },
+      { name: "444", url: "https://444.hu/feed" },
+      { name: "Átlátszó", url: "https://atlatszo.hu/feed" },
+      { name: "Mérce", url: "https://merce.hu/feed" }
+    ];
+
+    async function fetchFeed(feed) {
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feed.url)}`;
+      try {
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "text/xml");
+        const items = xml.querySelectorAll("item");
+        return Array.from(items).slice(0, 1).map(item => ({
+          title: item.querySelector("title").textContent,
+          link: item.querySelector("link").textContent,
+          pubDate: item.querySelector("pubDate")?.textContent || "",
+          source: feed.name
+        }));
+      } catch (err) {
+        console.error(`Hiba a(z) ${feed.name} betöltésekor:`, err);
+        return [];
+      }
+    }
+
+    async function loadNews() {
+      const container = document.getElementById("news");
+      container.innerHTML = "";
+      for (const feed of feeds) {
+        const items = await fetchFeed(feed);
+        items.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "news-card";
+          card.innerHTML = `
+            <a href="${item.link}" target="_blank">${item.title}</a>
+            <div class="news-meta">${item.source} • ${new Date(item.pubDate).toLocaleString("hu-HU", { dateStyle: "medium", timeStyle: "short" })}</div>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
+
+    loadNews();
+    setInterval(loadNews, 15 * 60 * 1000);
+  </script>
+</body>
+</html>
