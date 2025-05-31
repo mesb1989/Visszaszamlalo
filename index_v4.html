@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kormányváltás 2026</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    header {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Orszaghaz_night.jpg');
+      background-size: cover;
+      background-position: center;
+      padding: 60px 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 8px black;
+    }
+
+    #countdown {
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 10px 0 30px 0;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 20px;
+    }
+
+    .column {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .news {
+      background: #222;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .news h2 {
+      margin-top: 0;
+    }
+
+    .news-item {
+      margin-bottom: 15px;
+      background: #333;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .news-item a {
+      color: #9cf;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .news-item small {
+      display: block;
+      margin-top: 5px;
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Az óra ketyeg, a régi rendszer leáll, indul az új.</header>
+  <div id="countdown">Számolás...</div>
+
+  <div class="container">
+    <div class="column">
+      <h3>Partizán</h3>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PLiQ1IThs1NNOShiuvSY9dU6R8E46g2TzJ" allowfullscreen></iframe>
+    </div>
+
+    <div class="column news">
+      <h2>Valódi hírek</h2>
+      <div id="news-container">Betöltés...</div>
+    </div>
+
+    <div class="column">
+      <h3>ATV</h3>
+      <iframe src="https://www.youtube.com/embed/videoseries?list=PLDcgAzKvMm0hD_1h6J1vKJjK4udnHy-YN" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    const countdown = document.getElementById("countdown");
+    const target = new Date("2026-04-12T08:00:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        countdown.innerText = "A választás megkezdődött!";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      countdown.innerText = `Hátralévő idő: ${d} nap ${h} óra ${m} perc ${s} másodperc`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    const feedUrls = [
+      "https://telex.hu/rss",
+      "https://444.hu/feed",
+      "https://atlatszo.hu/feed",
+      "https://merce.hu/feed"
+    ];
+
+    async function fetchFeed(feedUrl) {
+      const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+      try {
+        const res = await fetch(api);
+        const data = await res.json();
+        return data.items.slice(0, 2);
+      } catch (err) {
+        return [];
+      }
+    }
+
+    async function loadNews() {
+      const container = document.getElementById("news-container");
+      container.innerHTML = "";
+      for (const url of feedUrls) {
+        const items = await fetchFeed(url);
+        for (const item of items) {
+          const div = document.createElement("div");
+          div.className = "news-item";
+          div.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><small>${new Date(item.pubDate).toLocaleString()}</small>`;
+          container.appendChild(div);
+        }
+      }
+    }
+
+    loadNews();
+    setInterval(loadNews, 15 * 60 * 1000);
+  </script>
+</body>
+</html>
