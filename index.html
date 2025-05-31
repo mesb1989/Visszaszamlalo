@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <audio id="bg-music" autoplay loop>
+<body onclick="playMusicOnce()">
+    <audio id="bg-music" loop>
         <source src="audio/0076. Epic Inspirational - AShamaluevMusic.mp3" type="audio/mpeg">
         A böngésződ nem támogatja az audio lejátszást.
     </audio>
@@ -33,6 +33,16 @@
                     width="100%" height="300" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
         </aside>
     </main>
+    <script>
+        let musicStarted = false;
+        function playMusicOnce() {
+            if (!musicStarted) {
+                const music = document.getElementById("bg-music");
+                music.play().catch(e => {});
+                musicStarted = true;
+            }
+        }
+    </script>
     <script src="script.js"></script>
     <script src="rss.js"></script>
     <script src="rss_videok.js"></script>
