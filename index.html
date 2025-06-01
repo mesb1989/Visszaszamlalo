@@ -116,15 +116,24 @@
       transition: all 0.2s ease;
     }
 
-   @media(max-width: 768px) {
+ @media(max-width: 768px) {
   main {
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .video-section,
   section {
-    width: 50%;
+    width: 100%;
+  }
+
+  @media(min-width: 480px) and (max-width: 768px) {
+    .video-section,
+    section {
+      width: 50%;
+    }
   }
 }
   </style>
