@@ -116,22 +116,17 @@
       transition: all 0.2s ease;
     }
 
-    @media(max-width: 768px) {
-      main {
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
+   @media(max-width: 768px) {
+  main {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 
-      .video-section {
-        order: 1;
-        width: 50%;
-      }
-
-      section {
-        order: 2;
-        width: 50%;
-      }
-    }
+  .video-section,
+  section {
+    width: 50%;
+  }
+}
   </style>
 </head>
 <body>
