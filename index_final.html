@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Visszaszámláló – Valódi hírek</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        header {
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Hungarian_Parliament_at_night_-_Budapest.jpg/1600px-Hungarian_Parliament_at_night_-_Budapest.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        header p {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .video-column, .news-column {
+            flex: 1;
+        }
+
+        .video-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin-bottom: 1rem;
+            border: none;
+        }
+
+        .news-column {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-column h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .news-item {
+            margin-bottom: 0.7rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        @media screen and (max-width: 359px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
+        <p>Valódi forrásokból, minden nap friss hírek</p>
+    </header>
+    <div class="main-content">
+        <div class="video-column">
+
+<iframe class="video-frame" src="https://www.youtube.com/embed/videoseries?list=PLzVbJ-QxofjUfFvXPtQeR_KykG9p4pLGe" allowfullscreen></iframe>
+<iframe class="video-frame" src="https://www.youtube.com/embed/videoseries?list=PLzVbJ-QxofjUbflRkQbxUSUROzd7b1Fr3" allowfullscreen></iframe>
+
+</div>
+<div class="news-column">
+            <h2>Valódi hírek</h2>
+            <div class="news-item">• Először atombombázó oroszokról írt a Mandiner, aztán gyorsan átírta a címet – Telex</div>
+            <div class="news-item">• Megválasztották Dobrev Klárát a DK új elnökének – Telex</div>
+            <div class="news-item">• Akár tízszer gyorsabbá teheti az internetet egy új erősítő – Telex</div>
+            <div class="news-item">• Kiszivárgott, kik kapják a közmédiás állásokat – Átlátszó</div>
+            <div class="news-item">• A Partizán új interjúja a rendőrségi visszaélésekről – Partizán</div>
+        </div>
+    </div>
+</body>
+</html>
