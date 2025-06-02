@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visszaszámláló – Valódi hírek</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f8f8f8;
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    header {
+      background: url('parlament.jpg') no-repeat center center;
+      background-size: cover;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .countdown {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .main-content {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      flex-wrap: nowrap;
+    }
+
+    .video-column, .news-column {
+      flex: 0 0 50%;
+      min-width: 0;
+    }
+
+    .video-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .news-column {
+      background: white;
+      border-radius: 8px;
+      padding: 0.5rem;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .news-column h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .news-item {
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+
+    @media screen and (max-width: 279px) {
+      .main-content {
+        flex-direction: column;
+      }
+
+      .video-column, .news-column {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Az óra ketyeg, a régi rendszer leáll.</h1>
+    <p>Valódi forrásokból, minden nap friss hírek</p>
+    <div class="countdown" id="countdown"></div>
+  </header>
+
+  <div class="main-content">
+    <div class="video-column">
+      <div id="partizan-video"></div>
+      <div id="atv-video"></div>
+    </div>
+    <div class="news-column">
+      <h2>Valódi hírek</h2>
+      <div id="news-container">
+        <div class="news-item">Hírek betöltése...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="rss.js"></script>
+  <script src="rss_videok.js"></script>
+</body>
+</html>
