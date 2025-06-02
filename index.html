@@ -58,9 +58,6 @@
     }
 
     .video-section {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
       flex: 1;
       min-width: 300px;
     }
@@ -116,23 +113,16 @@
       transition: all 0.2s ease;
     }
 
- 
-@media(max-width: 768px) {
-  main {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .video-section, section {
-    width: 50%;
-  }
-}
+    @media (max-width: 768px) {
+      main {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
 
-
-  .video-section,
-  section {
-    width: 50%;
-  }
-}
+      .video-section, section {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -184,12 +174,11 @@
 
     const feeds = [
       { name: "Telex", url: "https://telex.hu/rss" },
-      { name: "444", url: "https://444.hu/feed" },
+      { name: "444", url: "https://444.hu/rss" },
       { name: "Átlátszó", url: "https://atlatszo.hu/feed" },
       { name: "Mérce", url: "https://merce.hu/feed" }
     ];
 
-    
     async function fetchFeed(feed) {
       const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(feed.url);
       try {
@@ -198,9 +187,9 @@
         const parser = new DOMParser();
         const xml = parser.parseFromString(data.contents, "text/xml");
         const items = xml.querySelectorAll("item");
-        return Array.from(items).slice(0, 5).map(item => ({
-          title: item.querySelector("title")?.textContent || "Névtelen hír",
-          link: item.querySelector("link")?.textContent || "#",
+        return Array.from(items).slice(0, 3).map(item => ({
+          title: item.querySelector("title").textContent,
+          link: item.querySelector("link").textContent,
           pubDate: item.querySelector("pubDate")?.textContent || "",
           source: feed.name
         }));
@@ -213,15 +202,12 @@
     async function loadNews() {
       const container = document.getElementById("news");
       container.innerHTML = "";
-      let allItems = [];
+      const allItems = [];
       for (const feed of feeds) {
         const items = await fetchFeed(feed);
-        allItems = allItems.concat(items);
+        allItems.push(...items);
       }
-
-      // Sort by date descending
       allItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
       allItems.forEach(item => {
         const card = document.createElement("div");
         card.className = "news-card";
@@ -232,7 +218,6 @@
         container.appendChild(card);
       });
     }
-
 
     loadNews();
 
@@ -246,6 +231,7 @@
     setInterval(loadNews, 15 * 60 * 1000);
   </script>
 
-  <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cce599c79fb04e99abb9b93770232a29"}'></script><!-- End Cloudflare Web Analytics -->
+  <!-- Cloudflare Web Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cce599c79fb04e99abb9b93770232a29"}'></script>
 </body>
 </html>
